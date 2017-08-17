@@ -15,10 +15,10 @@ let ContactItem = React.createClass({
 
   render: function () {
     return (
-      React.createElement('li', {},
-        React.createElement('h2', {}, this.props.name),
-        React.createElement('a', {href: 'mailto: ' + this.props.email}, this.props.email),
-        React.createElement('h4', {}, this.props.description))
+      React.createElement('li', {className: 'ContactItem'},
+        React.createElement('h2', {className: 'ContactItem-name'}, this.props.name),
+        React.createElement('a', {className: 'ContactItem-email', href: 'mailto: ' + this.props.email}, this.props.email),
+        React.createElement('h4', {className: 'ContactItem-description'}, this.props.description))
     )
   }
 })
@@ -51,14 +51,28 @@ let ContactForm = React.createClass({
     }
 })
 
-let contactItemList = contacts
-                      .filter(contact => { return contact.email})
-                      .map(contact => {return React.createElement(ContactItem, contact)})
+let ContactView = React.createClass({
+  propTypes: {
+    contact: React.PropTypes.array.isRequired,
+    newContact: React.PropTypes.object.isRequired
+  },
 
-var rootElement =
-  React.createElement('div', {},
-    React.createElement('h1', {}, 'Contacts'),
-    React.createElement('ul', {}, contactItemList),
-    React.createElement(ContactForm, {contact: newContact}))
+  render: function () {
+    let contactItemElements = contacts
+                          .filter(contact => { return contact.email})
+                          .map(contact => {return React.createElement(ContactItem, contact)})
+    return (
+      React.createElement('div', {className: 'ContactView'},
+        React.createElement('h1', {className: 'ContactView-title'}, "Contacts"),
+        React.createElement('ul', {className: 'ContactView-list'}, contactItemElements),
+        React.createElement(ContactForm, {contact: this.props.newContact})
+      )
+    )
+  }
+})
 
-ReactDOM.render(rootElement, document.getElementById('react-app'))
+
+ReactDOM.render(React.createElement(ContactView, {
+  contact: contacts,
+  newContact: newContact
+}), document.getElementById('react-app'))
