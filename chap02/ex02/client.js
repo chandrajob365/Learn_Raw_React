@@ -44,7 +44,17 @@ let ContactForm = React.createClass({
 
   onSubmit: function (e) {
     e.preventDefault()
+    this.refs.name.focus()
     this.props.onSubmit()
+  },
+
+  componentDidUpdate: function (prevProps) {
+    let value = this.props.value
+    let prevValue = prevProps.value
+    if (this.isMounted && value.errors && value.errors !== prevValue.errors) {
+      if (value.errors.name) this.refs.name.focus()
+      else if (value.errors.email) this.refs.email.focus()
+    }
   },
 
   render: function () {
@@ -56,14 +66,17 @@ let ContactForm = React.createClass({
           className: errors.name && 'ContactForm-error',
           placeholder: 'Name (required)',
           value: this.props.value.name,
-          onChange: this.onNameInput
+          onChange: this.onNameInput,
+          autoFocus: true,
+          ref: 'name'
         }),
         React.createElement('input', {
           type: 'text',
           className: errors.email && 'ContactForm-error',
           placeholder: 'Email (required)',
           value: this.props.value.email,
-          onChange: this.onEmailInput
+          onChange: this.onEmailInput,
+          ref: 'email'
         }),
         React.createElement('textarea', {
           placeholder: 'Description',
@@ -148,7 +161,7 @@ function submitNewContact () {
       Object.keys(contact.errors).length === 0
       ? {
         newContact: Object.assign({}, CONTACT_TEMPLATE),
-        contacts: state.contacts.concat(contact)
+        contacts: state.contacts.slice(0).concat(contact)
       }
       : {newContact: contact}
     )
