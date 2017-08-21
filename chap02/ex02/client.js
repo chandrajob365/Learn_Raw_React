@@ -15,12 +15,11 @@ let ContactItem = React.createClass({
 
   render: function () {
     return (
-      React.createElement('li', {},
-        React.createElement('div', {},
-          React.createElement('h1', {}, this.props.name),
-          React.createElement('a', {href: 'mailto: ' + this.props.email}, this.props.email),
-          React.createElement('h3', {}, this.props.description))
-    ))
+      React.createElement('li', {className: 'ContactItem'},
+          React.createElement('h1', {className: 'ContactItem-name'}, this.props.name),
+          React.createElement('a', {className: 'ContactItem-email', href: 'mailto: ' + this.props.email}, this.props.email),
+          React.createElement('h3', {className: 'ContactItem-description'}, this.props.description))
+    )
   }
 })
 
@@ -49,22 +48,25 @@ let ContactForm = React.createClass({
   },
 
   render: function () {
+    let errors = this.props.value.errors || {}
     return (
       React.createElement('form', {onSubmit: this.onSubmit, className: 'ContactForm', noValidate: true},
         React.createElement('input', {
           type: 'text',
-          placeholder: 'Enter Name',
+          className: errors.name && 'ContactForm-error',
+          placeholder: 'Name (required)',
           value: this.props.value.name,
           onChange: this.onNameInput
         }),
         React.createElement('input', {
           type: 'text',
-          placeholder: 'Enter Email',
+          className: errors.email && 'ContactForm-error',
+          placeholder: 'Email (required)',
           value: this.props.value.email,
           onChange: this.onEmailInput
         }),
         React.createElement('textarea', {
-          placeholder: 'Enter Description',
+          placeholder: 'Description',
           value: this.props.value.description,
           onChange: this.onDescriptionInput
         }),
@@ -87,9 +89,9 @@ let ContactView = React.createClass({
                           .map(contact => { return React.createElement(ContactItem, contact) })
 
     return (
-      React.createElement('div', {},
-        React.createElement('h1', {}, 'Contacts'),
-        React.createElement('ul', {}, listContactItem),
+      React.createElement('div', {className: 'ContactView'},
+        React.createElement('h1', {className: 'ContactView-title'}, 'Contacts'),
+        React.createElement('ul', {className: 'ContactView-list'}, listContactItem),
         React.createElement(ContactForm, {
           value: this.props.newContact,
           onChange: this.props.onNewContactChange,
@@ -136,7 +138,12 @@ function updateNewContact (contact) {
 
 function submitNewContact () {
   let contact = Object.assign({}, state.newContact, {key: state.contacts.length + 1, errors: {}})
-  if (contact.name && contact.email) {
+  if (!contact.name) {
+    contact.errors.name = ['Please enter your new contact\'s name']
+  }
+  if (!/.+@.+\..+/.test(contact.email)) {
+    contact.errors.email = ['Please enter your new contact\'s email']
+  }
     setState(
       Object.keys(contact.errors).length === 0
       ? {
@@ -145,5 +152,4 @@ function submitNewContact () {
       }
       : {newContact: contact}
     )
-  }
 }
