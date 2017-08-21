@@ -141,7 +141,7 @@ function submitNewContact () {
       Object.keys(contact.errors).length === 0
       ? {
         newContact: Object.assign({}, CONTACT_TEMPLATE),
-        contacts: state.contacts.slice(0).concat(contact)
+        contacts: state.contacts.concat(contact)
       }
       : {newContact: contact}
     )
